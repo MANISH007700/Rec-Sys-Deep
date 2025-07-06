@@ -1,0 +1,70 @@
+# Configuration file for the Recommendation System
+
+# Data settings
+data:
+  dataset_name: "movielens"
+  data_path: "data/"
+  min_interactions: 5 # Minimum interactions per user
+  test_size: 0.2
+  random_state: 42
+
+# Model settings
+models:
+  collaborative_filtering:
+    n_factors: 100
+    n_epochs: 20
+    lr: 0.01
+    reg: 0.1
+
+  content_based:
+    tfidf_max_features: 1000
+    similarity_metric: "cosine"
+
+  neural_cf:
+    embedding_dim: 64
+    hidden_layers: [128, 64, 32]
+    dropout: 0.2
+    lr: 0.001
+    batch_size: 256
+    epochs: 50
+
+# Evaluation settings
+evaluation:
+  k_values: [5, 10, 20]
+  cv_folds: 5
+  metrics:
+    - "rmse"
+    - "mae"
+    - "precision@k"
+    - "recall@k"
+    - "ndcg@k"
+    - "map"
+    - "mrr"
+
+# API settings
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: true
+  max_recommendations: 20
+
+# Database settings
+database:
+  type: "postgresql" # or "mongodb"
+  host: "localhost"
+  port: 5432
+  name: "recsys"
+  user: "postgres"
+  password: "password"
+
+# Search settings
+search:
+  text_model: "sentence-transformers/all-MiniLM-L6-v2"
+  image_model: "resnet50"
+  max_results: 50
+  similarity_threshold: 0.5
+
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/recsys.log"
