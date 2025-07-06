@@ -70,11 +70,11 @@ class SVDRecommender(BaseRecommender):
         )
         
         # Fit SVD on the centered matrix
-        self.svd.fit(centered_matrix.T)  # Transpose for item-based decomposition
+        self.svd.fit(centered_matrix)  # Fit on original matrix
         
         # Get user and item factors
-        self.item_factors = self.svd.components_.T  # (n_items, n_factors)
         self.user_factors = self.svd.transform(centered_matrix)  # (n_users, n_factors)
+        self.item_factors = self.svd.components_.T  # (n_items, n_factors)
         
         # Calculate biases
         self.user_biases = np.mean(centered_matrix, axis=1)  # User biases
