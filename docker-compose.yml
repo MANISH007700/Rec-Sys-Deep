@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: recsys_postgres
+    environment:
+      POSTGRES_DB: recsys
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Recommendation System
+  recsys:
+    build: .
+    container_name: recsys_app
+    environment:
+      DATABASE_TYPE: postgresql
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: recsys
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: password
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      API_DEBUG: "true"
+    ports:
+      - "8000:8000" # API
+      - "8501:8501" # Frontend
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: recsys_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
